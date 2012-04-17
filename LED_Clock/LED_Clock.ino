@@ -8,6 +8,8 @@
 RTC_DS1307 RTC; // gnd = 16, 5v = 17, data = 18, 19
 LPD8806 strip = LPD8806(PIXELS); // data = 11, clock = 13
 
+int lastSecond = 0;
+
 void setup () {
   Serial.begin(57600);
   Wire.begin();
@@ -36,19 +38,24 @@ void loop () {
     strip.setPixelColor(i, 0, 0, 0);
   }
   
-  // Set seconds
-  strip.setPixelColor(now.second(), 255, 0, 0);
-  
-  // Set minutes
-  strip.setPixelColor(now.minute(), 0, 255, 0);
-  
-  // Set hours
   float hr = (float)now.hour();
   if (hr > 12) {
     hr -= 12;
   }
-  hr += ((float)now.minute() / 60.0) ;
-  strip.setPixelColor((hr / 12.0) * 60.0, 0, 0, 255);
+  hr += ((float)now.minute() / 60.0);
+  int hourPixel = (hr / 12.0) * 60.0;
+  
+  int secondPixel = now.second();
+  int minutePixel = now.minute();
+  
+  // Set seconds
+  strip.setPixelColor(secondPixel, 127, 0, 0);
+  
+  // Set minutes
+  strip.setPixelColor(minutePixel, (secondPixel == minutePixel ? 127 : 0), 127, 0);
+  
+  // Set hours
+  strip.setPixelColor(hourPixel, (secondPixel == hourPixel ? 127 : 0), (minutePixel == hourPixel ? 127 : 0), 127);
   
 //  Serial.print(now.second());
 //  Serial.print(":");
@@ -57,5 +64,35 @@ void loop () {
 //  Serial.print(hr);
 //  Serial.print("!");
 //  Serial.println(((hr / 24.0) * 60.0));
+  strip.show();
+  
+  if (lastSecond != secondPixel) {
+    // If the second just changed -- pulse the minute.
+    pulse(minutePixel, (secondPixel == minutePixel ? 127 : 0), 127, 0);
+    lastSecond = secondPixel;
+  }
+}
+
+void pulse (int pixel, float r, float g, float b) {
+  float minDiv = 1.0;
+  float maxDiv = 3.0;
+  float currentDiv = 1.0;
+  float stepDiv = 0.25;
+
+  while (currentDiv < maxDiv) {
+    currentDiv += stepDiv;
+    strip.setPixelColor(pixel, r / currentDiv, g / currentDiv, b / currentDiv);
+    strip.show();
+    delay(25);
+  }
+  
+  while (currentDiv > minDiv) {
+    currentDiv -= stepDiv;
+    strip.setPixelColor(pixel, r / currentDiv, g / currentDiv, b / currentDiv);
+    strip.show();
+    delay(25);
+  }
+
+  strip.setPixelColor(pixel, r, g, b);
   strip.show();
 }
