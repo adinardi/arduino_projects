@@ -44,7 +44,11 @@ void loop () {
   
   // Set hours
   float hr = (float)now.hour();
-  strip.setPixelColor((hr / 24.0) * 60.0, 0, 0, 255);
+  if (hr > 12) {
+    hr -= 12;
+  }
+  hr += ((float)now.minute() / 60.0) ;
+  strip.setPixelColor((hr / 12.0) * 60.0, 0, 0, 255);
   
 //  Serial.print(now.second());
 //  Serial.print(":");
