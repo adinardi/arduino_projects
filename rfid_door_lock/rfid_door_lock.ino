@@ -88,10 +88,18 @@ void loop() {
 //  BlueTooth.println(door_state == HIGH ? "Door state: HIGH" : "Door state: LOW");
   if (isOpen == 1 && door_state == HIGH) {
     delay(1000);
-    lockDoor();
-    isOpen = 0;
+    // Check that the door is still closed (effectively debouncing).
+    if (digitalRead(PIN_DOOR_SENSOR_SENSE) == HIGH) {
+      lockDoor();
+      isOpen = 0;
+    }
   } else if (door_state == LOW) {
-    isOpen = 1;
+    // Wait to "de-bounce"
+    delay(100);
+    // Check again and proclaim OPEN if still really open.
+    if (digitalRead(PIN_DOOR_SENSOR_SENSE) == LOW) {
+      isOpen = 1;
+    }
   }
 }
 
