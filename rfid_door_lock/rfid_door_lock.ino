@@ -66,6 +66,7 @@ void loop() {
 
       if (bytesread == 10) { // Make sure we got 10 bytes.
         digitalWrite(PIN_RFID_ENABLE, HIGH); // Stop reading rfid input.
+        // BlueTooth.println("Got Tag: " + tag);
         processTag();
         digitalWrite(PIN_RFID_ENABLE, LOW); // read RFID input again.
       }
@@ -114,12 +115,12 @@ void processTag() {
   if (isValid) {
     openDoor();
   } else {
-    BlueTooth.println("DENIED");
+    // BlueTooth.println("DENIED");
   }
 }
 
 void openDoor() {
-  BlueTooth.println("OPEN DOOR");
+  // BlueTooth.println("OPEN DOOR");
   door.attach(PIN_SERVO_SIGNAL);
 
   // Open
@@ -130,7 +131,7 @@ void openDoor() {
 }
 
 void lockDoor() {
-  BlueTooth.println("LOCK DOOR");
+  // BlueTooth.println("LOCK DOOR");
   door.attach(PIN_SERVO_SIGNAL);
 
   // Close
