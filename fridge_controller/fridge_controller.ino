@@ -3,8 +3,8 @@
 
 #define ONE_WIRE A0
 #define COMPRESSOR_PIN 2
-#define HIGH_TEMP 45 // 70
-#define LOW_TEMP 37 //65
+#define HIGH_TEMP 53 // 70
+#define LOW_TEMP 47 //65
 
 OneWire ds(ONE_WIRE);
 DallasTemperature sensors(&ds);
